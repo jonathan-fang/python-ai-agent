@@ -7,6 +7,12 @@ from openai import OpenAI
 
 # standard convention use main()
 def main() -> None:
+
+    parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
+    # Now we can access `args.user_prompt`
+
     load_dotenv()
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if api_key is None: # if not api_key
@@ -18,27 +24,16 @@ def main() -> None:
         api_key=api_key,
     )
 
-    parser = argparse.ArgumentParser(description="Chatbot")
-    parser.add_argument("user_prompt", type=str, help="User prompt")
-    args = parser.parse_args()
-    # Now we can access `args.user_prompt`
-
-    # messages: list[dict] = [
-    #         {
-    #             "role": "user",
-    #             "content": args.user_prompt,
-    #         }
-    # ]
-    # user_prompt = messages[0]["content"]
-
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=[
+    messages: list[dict] = [
             {
                 "role": "user",
                 "content": args.user_prompt,
             }
-        ],
+    ]
+
+    response = client.chat.completions.create(
+        model="openrouter/free",
+        messages=messages,
     )
 
     print(f"User prompt: {args.user_prompt}")
