@@ -18,23 +18,29 @@ def main() -> None:
         api_key=api_key,
     )
 
+    parser = argparse.ArgumentParser(description="Chatbot")
+    parser.add_argument("user_prompt", type=str, help="User prompt")
+    args = parser.parse_args()
+    # Now we can access `args.user_prompt`
+
+    messages: list[dict] = [
+            {
+                "role": "user",
+                "content": args.user_prompt,
+            }
+    ]
+    user_prompt = messages[0]["content"]
+
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=[
             {
                 "role": "user",
-                "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
+                "content": user_prompt,
             }
         ],
     )
 
-    messages: list[dict] = [
-            {
-                "role": "user",
-                "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
-            }
-    ]
-    user_prompt = messages[0]["content"]
     print(f"User prompt: {user_prompt}")
 
     # print(type(client.chat.completions.create))
