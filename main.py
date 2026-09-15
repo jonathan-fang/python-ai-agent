@@ -1,5 +1,6 @@
-import os
 import argparse
+import os
+
 
 # PEP 8 style convention (stdlib imports, blank line, then third-party imports)
 from dotenv import load_dotenv
@@ -31,12 +32,17 @@ def main() -> None:
             }
     ]
 
+    generate_content(client, messages)
+
+def generate_content(client: OpenAI, messages: list) -> None:
+
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
     )
 
-    print(f"User prompt: {args.user_prompt}")
+    print(f"User prompt: {messages[0]["content"]}") # or print(f'User prompt: {messages[0]["content"]}')
+    # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
 
     if response.usage is None:
         raise RuntimeError("Error: failed API request")
