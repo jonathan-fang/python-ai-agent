@@ -23,33 +23,25 @@ def main() -> None:
     args = parser.parse_args()
     # Now we can access `args.user_prompt`
 
-    messages: list[dict] = [
-            {
-                "role": "user",
-                "content": args.user_prompt,
-            }
-    ]
-    user_prompt = messages[0]["content"]
+    # messages: list[dict] = [
+    #         {
+    #             "role": "user",
+    #             "content": args.user_prompt,
+    #         }
+    # ]
+    # user_prompt = messages[0]["content"]
 
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=[
             {
                 "role": "user",
-                "content": user_prompt,
+                "content": args.user_prompt,
             }
         ],
     )
 
-    print(f"User prompt: {user_prompt}")
-
-    # print(type(client.chat.completions.create))
-
-    # if client.chat.completions.create[usage] is None:
-    #     raise RuntimeError("Error: failed API request")
-
-    # prompt_tokens = chat.completions.create[usage][prompt_tokens]
-    # completion_tokens = chat.completions.create[usage][completion_tokens]
+    print(f"User prompt: {args.user_prompt}")
 
     if response.usage is None:
         raise RuntimeError("Error: failed API request")
@@ -60,9 +52,9 @@ def main() -> None:
     print(f"Prompt tokens: {prompt_tokens}")
     print(f"Response tokens: {completion_tokens}")
 
-    # print(f"Response: {response.choices[0].message.content}") why doesnt this work?
-    print("Response: ")
-    print(response.choices[0].message.content)
+    print(f"Response: {response.choices[0].message.content}")
+    # print("Response: ")
+    # print(response.choices[0].message.content)
 
     # no dict/map indexing needed here. response isn't a dictionary — it's an object (an instance of a Pydantic model that the OpenAI SDK defines), so you access its fields with dot notation, the same way you're already doing with response.choices[0].message.content. how was i suppose to know that
 
