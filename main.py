@@ -1,4 +1,6 @@
 import os
+import argparse
+
 # PEP 8 style convention (stdlib imports, blank line, then third-party imports)
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -26,8 +28,14 @@ def main() -> None:
         ],
     )
 
-    user_prompt = message.content
-    print(f"User prompt: {message.content}")
+    messages: list[dict] = [
+            {
+                "role": "user",
+                "content": "Why is Boot.dev such a great place to learn backend development? Use one paragraph maximum.",
+            }
+    ]
+    user_prompt = messages[0]["content"]
+    print(f"User prompt: {user_prompt}")
 
     # print(type(client.chat.completions.create))
 
@@ -46,6 +54,7 @@ def main() -> None:
     print(f"Prompt tokens: {prompt_tokens}")
     print(f"Response tokens: {completion_tokens}")
 
+    # print(f"Response: {response.choices[0].message.content}") why doesnt this work?
     print("Response: ")
     print(response.choices[0].message.content)
 
