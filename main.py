@@ -11,6 +11,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Chatbot")
     parser.add_argument("user_prompt", type=str, help="User prompt")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     args = parser.parse_args()
     # Now we can access `args.user_prompt`
 
@@ -32,26 +33,27 @@ def main() -> None:
             }
     ]
 
-    generate_content(client, messages)
+    generate_content(client, messages, args)
 
-def generate_content(client: OpenAI, messages: list) -> None:
+def generate_content(client: OpenAI, messages: list, args) -> None:
 
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
     )
 
-    print(f"User prompt: {messages[0]["content"]}") # or print(f'User prompt: {messages[0]["content"]}')
-    # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
+    if args.verbose:
+        print(f"User prompt: {messages[0]["content"]}") # or print(f'User prompt: {messages[0]["content"]}')
+        # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
 
-    if response.usage is None:
-        raise RuntimeError("Error: failed API request")
+        if response.usage is None:
+            raise RuntimeError("Error: failed API request")
 
-    prompt_tokens: int = response.usage.prompt_tokens
-    completion_tokens: int = response.usage.completion_tokens
+        prompt_tokens: int = response.usage.prompt_tokens
+        completion_tokens: int = response.usage.completion_tokens
 
-    print(f"Prompt tokens: {prompt_tokens}")
-    print(f"Response tokens: {completion_tokens}")
+        print(f"Prompt tokens: {prompt_tokens}")
+        print(f"Response tokens: {completion_tokens}")
 
     print(f"Response: {response.choices[0].message.content}")
     # print("Response: ")
