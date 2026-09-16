@@ -21,7 +21,7 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
         if not os.path.isdir(target_dir):
             return f'    Error: "{directory}" is not a directory'
 
-        apparent_list: list = (os.listdir(target_dir)) #how was i supposed to know that this would give a list of file names?
+        entries: list = (os.listdir(target_dir)) #how was i supposed to know that this would give a list of file names?
 
         # if target_dir:
         # return f'Success: "{directory}" is within the working directory'
@@ -39,11 +39,11 @@ def get_files_info(working_directory: str, directory: str = ".") -> str:
             is_dir: bool = os.path.isdir(full_path) #is_dir bool
             # return name, file_size, is_dir
             return f'  - {item_name}: file_size={file_size} bytes, is_dir={is_dir}'
-        what_now = list(map(map_helper, apparent_list))
+        file_info_lines = list(map(map_helper, entries))
 
-        # print(what_now) # is a list of str items
+        # print(file_info_lines) # is a list of str items
 
-        return "\n".join(what_now)
+        return "\n".join(file_info_lines)
 
         # return f'- {name}: file_size={file_size}, is_dir={is_dir}'
     
