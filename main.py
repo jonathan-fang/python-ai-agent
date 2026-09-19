@@ -1,5 +1,7 @@
 import argparse
 import os
+# import prompts #prompts.system_prompt
+from prompts import system_prompt #system_prompt
 
 
 # PEP 8 style convention (stdlib imports, blank line, then third-party imports)
@@ -27,10 +29,8 @@ def main() -> None:
     )
 
     messages: list[dict] = [
-            {
-                "role": "user",
-                "content": args.user_prompt,
-            }
+            {"role": "system", "content": system_prompt}, # vs {"role": "system", "content": system_prompt,}
+            {"role": "user", "content": args.user_prompt},
     ]
 
     generate_content(client, messages, args)
