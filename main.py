@@ -1,6 +1,8 @@
 import argparse
+import json
 import os
 # import prompts #prompts.system_prompt
+from call_function import available_functions
 from prompts import system_prompt #system_prompt
 
 
@@ -40,6 +42,7 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
     response = client.chat.completions.create(
         model="openrouter/free",
         messages=messages,
+        tools=available_functions,
     )
 
     if args.verbose:
@@ -55,11 +58,19 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {completion_tokens}")
 
-    print(f"Response: {response.choices[0].message.content}")
+    # print(f"Response: {response.choices[0].message.content}")
     # print("Response: ")
     # print(response.choices[0].message.content)
 
     # no dict/map indexing needed here. response isn't a dictionary — it's an object (an instance of a Pydantic model that the OpenAI SDK defines), so you access its fields with dot notation, the same way you're already doing with response.choices[0].message.content. how was i suppose to know that
+    message = response.choices[0].message # grabbing the message
+
+    if message.tool_calls: #type?
+        for tool_call in message.tool_calls:
+            function_args = json.loads(tool_call.function.arguments or "{}")
+            print(f"Calling function: {tool_call.function.name}({function_args})")
+    else:
+        print(f"Response: {message.content}")
 
 # use this thing to guard
 if __name__ == "__main__":
