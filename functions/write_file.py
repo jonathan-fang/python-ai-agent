@@ -23,3 +23,26 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
         
     except Exception as e:
         return f'    Error: reading file - {e}'
+
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": "Write user-provided content to a specified file relative to the working directory",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "required": ["file_path"],
+                    "description": "File path to write user-provided content to, relative to the working directory (default is the working directory itself)",
+                },
+                "content": {
+                    "type": "string",
+                    "required": ["content"],
+                    "description": "User-provided content to write into the specified file path, relative to the working directory (default is the working directory itself)",
+                },
+            },
+        },
+    },
+}
