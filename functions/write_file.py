@@ -34,15 +34,16 @@ schema_write_file = {
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "required": ["file_path"],
+                    # "required": ["file_path"],
                     "description": "File path to write user-provided content to, relative to the working directory (default is the working directory itself)",
                 },
                 "content": {
                     "type": "string",
-                    "required": ["content"],
+                    # "required": ["content"],
                     "description": "User-provided content to write into the specified file path, relative to the working directory (default is the working directory itself)",
                 },
             },
+            "required": ["file_path", "content"],
         },
     },
 }

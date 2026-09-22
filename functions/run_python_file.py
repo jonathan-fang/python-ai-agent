@@ -77,15 +77,16 @@ schema_run_python_file = {
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "required": ["file_path"],
+                    # "required": ["file_path"],
                     "description": "File path to execute Python, relative to the working directory (default is the working directory itself)",
                 },
                 "args": {
                     "type": "array",
-                    "items": "string",
+                    "items": {"type": "string"},
                     "description": "User-provided arguments that are passed when running Python file",
                 },
             },
+            "required": ["file_path"],
         },
     },
 }

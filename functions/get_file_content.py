@@ -33,16 +33,17 @@ schema_get_file_content = {
     "type": "function",
     "function": {
         "name": "get_file_content",
-        "description": "Get file content from a specified file relative to the working directory",
+        "description": f"Get file content (at most {MAX_CHARS} characters) from a specified file relative to the working directory",
         "parameters": {
             "type": "object",
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "required": ["file_path"],
+                    # "required": ["file_path"],
                     "description": "File path to get file content from, relative to the working directory (default is the working directory itself)",
                 },
             },
+            "required": ["file_path"],
         },
     },
 }
