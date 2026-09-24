@@ -6,6 +6,7 @@ from prompts import system_prompt
 
 
 # PEP 8 style convention (stdlib imports, blank line, then third-party imports)
+from config import MAX_ITERS
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -37,7 +38,7 @@ def main() -> None:
 def generate_content(client: OpenAI, messages: list, args) -> None:
 
     it_counter: int = 0
-    for _ in range(20):
+    for _ in range(MAX_ITERS):
     # call the model, handle responses, etc.
         response = client.chat.completions.create(
             model="openrouter/free",
@@ -86,8 +87,8 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
         
         it_counter += 1
 
-    if it_counter > 20:
-        raise Exception("Error: The maximum number of iterations is reached and the model still hasn't produced a final response.")
+    if it_counter > MAX_ITERS:
+        raise Exception(f"Error: The maximum number of iterations ({MAX_ITERS}) is reached and the model still hasn't produced a final response.")
         sys.exit(1)
 
 if __name__ == "__main__":
