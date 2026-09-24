@@ -1,16 +1,14 @@
 import argparse
 import json
 import os
-# import prompts #prompts.system_prompt
 from call_function import available_functions, call_function
-from prompts import system_prompt #system_prompt
+from prompts import system_prompt
 
 
 # PEP 8 style convention (stdlib imports, blank line, then third-party imports)
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# standard convention use main()
 def main() -> None:
 
     parser = argparse.ArgumentParser(description="Chatbot")
@@ -22,7 +20,6 @@ def main() -> None:
     load_dotenv()
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if api_key is None: # if not api_key
-        # RuntimeError not RunTimeError -- asked ai tutor
         raise RuntimeError("Error: OPENROUTER_API_KEY environment variable not found")
     
     client = OpenAI(
@@ -31,7 +28,7 @@ def main() -> None:
     )
 
     messages: list[dict] = [
-            {"role": "system", "content": system_prompt}, # vs {"role": "system", "content": system_prompt,}
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": args.user_prompt},
     ]
 
@@ -46,7 +43,7 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
     )
 
     if args.verbose:
-        print(f"User prompt: {args.user_prompt}") # or print(f'User prompt: {messages[0]["content"]}')
+        print(f"User prompt: {args.user_prompt}")
         # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
 
         if response.usage is None:
@@ -58,30 +55,22 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
         print(f"Prompt tokens: {prompt_tokens}")
         print(f"Response tokens: {completion_tokens}")
 
-    # print(f"Response: {response.choices[0].message.content}")
-    # print("Response: ")
-    # print(response.choices[0].message.content)
-
     # no dict/map indexing needed here. response isn't a dictionary — it's an object (an instance of a Pydantic model that the OpenAI SDK defines), so you access its fields with dot notation, the same way you're already doing with response.choices[0].message.content. how was i suppose to know that
     message = response.choices[0].message # grabbing the message
 
     if message.tool_calls: #type?
         for tool_call in message.tool_calls:
             function_args = json.loads(tool_call.function.arguments or "{}")
-            # print(f"Calling function: {tool_call.function.name}({function_args})")
+            print(f"Calling function: {tool_call.function.name}({function_args})")
             result_message = call_function(tool_call, args.verbose)
-            # try:
-                # if result_message["content"] is not Empty:
             if not result_message["content"]:
                 raise Exception("Error: The returned tool message should have a non-empty 'content'")
             elif args.verbose:
                 print(f"-> {result_message['content']}")
             else:
                 print(result_message)
-            # except Exception as e:
     else:
         print(f"Response: {message.content}")
 
-# use this thing to guard
 if __name__ == "__main__":
     main()
