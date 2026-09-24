@@ -46,7 +46,7 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
     )
 
     if args.verbose:
-        print(f"User prompt: {messages[0]["content"]}") # or print(f'User prompt: {messages[0]["content"]}')
+        print(f"User prompt: {args.user_prompt}") # or print(f'User prompt: {messages[0]["content"]}')
         # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
 
         if response.usage is None:
