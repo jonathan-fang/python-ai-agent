@@ -36,41 +36,59 @@ def main() -> None:
 
 def generate_content(client: OpenAI, messages: list, args) -> None:
 
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages=messages,
-        tools=available_functions,
-    )
+    it_counter: int = 0
+    for _ in range(20):
+    # call the model, handle responses, etc.
+        response = client.chat.completions.create(
+            model="openrouter/free",
+            messages=messages,
+            tools=available_functions,
+        )
 
-    if args.verbose:
-        print(f"User prompt: {args.user_prompt}")
-        # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
+        # no dict/map indexing needed here. response isn't a dictionary — it's an object (an instance of a Pydantic model that the OpenAI SDK defines), so you access its fields with dot notation, the same way you're already doing with response.choices[0].message.content. how was i suppose to know that
+        message = response.choices[0].message # grabbing the message
+        messages.append(message) #
 
-        if response.usage is None:
-            raise RuntimeError("Error: failed API request")
+        if args.verbose:
+            print(f"User prompt: {args.user_prompt}")
+            # print(f"User prompt: {messages["content"]}") fails because TypeError: list indices must be integers or slices, not str, see list indexing vs. dictionary key lookup
 
-        prompt_tokens: int = response.usage.prompt_tokens
-        completion_tokens: int = response.usage.completion_tokens
+            if response.usage is None:
+                raise RuntimeError("Error: failed API request")
 
-        print(f"Prompt tokens: {prompt_tokens}")
-        print(f"Response tokens: {completion_tokens}")
+            prompt_tokens: int = response.usage.prompt_tokens
+            completion_tokens: int = response.usage.completion_tokens
 
-    # no dict/map indexing needed here. response isn't a dictionary — it's an object (an instance of a Pydantic model that the OpenAI SDK defines), so you access its fields with dot notation, the same way you're already doing with response.choices[0].message.content. how was i suppose to know that
-    message = response.choices[0].message # grabbing the message
+            print(f"Prompt tokens: {prompt_tokens}")
+            print(f"Response tokens: {completion_tokens}")
 
-    if message.tool_calls: #type?
-        for tool_call in message.tool_calls:
-            function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
-            result_message = call_function(tool_call, args.verbose)
-            if not result_message["content"]:
-                raise Exception("Error: The returned tool message should have a non-empty 'content'")
-            elif args.verbose:
-                print(f"-> {result_message['content']}")
-            else:
-                print(result_message)
-    else:
-        print(f"Response: {message.content}")
+        if message.tool_calls: #type?
+            for tool_call in message.tool_calls:
+                function_args = json.loads(tool_call.function.arguments or "{}")
+                print(f"Calling function: {tool_call.function.name}({function_args})")
+                result_message = call_function(tool_call, args.verbose)
+                # messages.append(result_message) #
+                if not result_message["content"]:
+                    raise Exception("Error: The returned tool message should have a non-empty 'content'")
+                if args.verbose:
+                    print(f"-> {result_message['content']}")
+                # if it_counter > 20:
+                #     raise Exception("Error: The maximum number of iterations is reached and the model still hasn't produced a final response.")
+                #     sys.exit(1)
+                # else:
+                messages.append(result_message) #
+                if args.verbose:
+                    print(result_message)
+        else:
+            print(f"Response: {message.content}")
+            # continue # i thought this was needed to break out of the loop
+            break
+        
+        it_counter += 1
+
+    if it_counter > 20:
+        raise Exception("Error: The maximum number of iterations is reached and the model still hasn't produced a final response.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
