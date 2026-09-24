@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 # import prompts #prompts.system_prompt
-from call_function import available_functions
+from call_function import available_functions, call_function
 from prompts import system_prompt #system_prompt
 
 
@@ -68,7 +68,17 @@ def generate_content(client: OpenAI, messages: list, args) -> None:
     if message.tool_calls: #type?
         for tool_call in message.tool_calls:
             function_args = json.loads(tool_call.function.arguments or "{}")
-            print(f"Calling function: {tool_call.function.name}({function_args})")
+            # print(f"Calling function: {tool_call.function.name}({function_args})")
+            result_message = call_function(tool_call, args.verbose)
+            # try:
+                # if result_message["content"] is not Empty:
+            if not result_message["content"]:
+                raise Exception("Error: The returned tool message should have a non-empty 'content'")
+            elif args.verbose:
+                print(f"-> {result_message['content']}")
+            else:
+                print(result_message)
+            # except Exception as e:
     else:
         print(f"Response: {message.content}")
 
